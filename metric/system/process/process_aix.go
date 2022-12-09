@@ -169,8 +169,8 @@ func FillPidMetrics(_ resolve.Resolver, pid int, state ProcState, filter func(st
 	state.Memory.Rss.Bytes = opt.UintWith(uint64(info.pi_drss+info.pi_trss) * pagesize)
 
 	state.CPU.StartTime = unixTimeMsToTime(uint64(info.pi_start) * 1000)
-	state.CPU.User.Ticks = opt.UintWith(uint64(info.pi_utime) * 1000)
-	state.CPU.System.Ticks = opt.UintWith(uint64(info.pi_stime) * 1000)
+	state.CPU.User.Ticks = opt.UintWith(uint64(info.pi_ru.ru_utime.tv_usec)/1000 + uint64(info.pi_ru.ru_utime.tv_sec)*1000) // convert to ms
+	state.CPU.System.Ticks = opt.UintWith(uint64(info.pi_ru.ru_stime.tv_usec)/1000 + uint64(info.pi_ru.ru_stime.tv_sec)*1000) // convert to ms
 	state.CPU.Total.Ticks = opt.UintWith(opt.SumOptUint(state.CPU.User.Ticks, state.CPU.System.Ticks))
 
 	// Get Proc Args
